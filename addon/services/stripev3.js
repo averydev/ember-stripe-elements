@@ -87,6 +87,19 @@ export default class StripeService extends Service {
     }
   }
 
+  // If you are using Stripe Connect, you need to pass { stripeAccount: 'acct_12345' } as the second argument.
+  reinitialize(options = {}) {
+    let { publishableKey, stripeOptions } = this;
+
+    if (!publishableKey) {
+      throw new Error(
+        'stripev3: Missing Stripe key, please set `ENV.stripe.publishableKey` in config/environment.js'
+      );
+    }
+
+    this._stripe = new Stripe(publishableKey, {...stripeOptions, ...options});
+  }
+
   addStripeElement(element) {
     this._elements.pushObject(element);
   }
@@ -111,6 +124,13 @@ export default class StripeService extends Service {
    */
   redirectToCheckout() {
     return this.instance.redirectToCheckout(...arguments);
+  }
+
+  /**
+   * @see https://stripe.com/docs/js/payment_intents/confirm_payment
+   */
+  confirmPayment() {
+    return this.instance.confirmPayment(...arguments);
   }
 
   /**
